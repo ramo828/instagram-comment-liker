@@ -8,8 +8,14 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.getComments.clicked.connect(self.radio_button_ekle)
-        self.counter = 0
+        self.getComments.clicked.connect(self.get_comments)
+        self.startLike.clicked.connect(self.start)
+        self.instagram = Instagram()
+        self.kullanicilar = {
+            "elda.r2372": "ramiz123",
+            "illegalism666": "Ramizz...1994hack"
+        }
+
 
     def add_colored_text(self, text, color):
         # Yazı rengini ayarlamak için QTextCharFormat sınıfını kullanıyoruz
@@ -27,7 +33,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, len(text))
         cursor.setCharFormat(char_format)
 
-    def radio_button_ekle(self):
+    def get_comments(self):
         if(not self.postLink.text()):
             self.add_colored_text("Post linki bos buraxildi\n",'red')
         elif(not self.postLink.text().startswith('https://')):
@@ -35,27 +41,24 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         else:
             self.commentsList.setEnabled(True)
             self.add_colored_text("Ger sey qaydasindadir\n",'blue')
+            self.get_comment_list()
 
-
-        # ins = Instagram()
-        # user = 'elda.r2372'
-        # password = 'ramiz123'
-        # url = 'https://www.instagram.com/p/CrIk5JTqLQ5/'
-        # ins.set_account(user, password)
-        # media = ins.get_media(url)
-        # comments = ins.get_comments(media)
-        # for comment in range(len(comments)):
-        #     self.commentsList.addItem(comments[comment].text)
-                # Model oluşturma
+    def get_comment_list(self):
+        self.commentsList.clear()
+        self.instagram.set_account('illegalism666', self.kullanicilar['illegalism666'])
+        media = self.instagram.get_media(self.postLink.text())
+        comments = self.instagram.get_comments(media)
+        for comment in range(len(comments)):
+            self.commentsList.addItem(comments[comment].text)
         
         # print(comments[0].text)
-        # comment_pk = ins.get_comment_pk(comments[0])
+        self.comment_pk = self.instagram.get_comment_pk(comments[self.commentsList.currentIndex()])
         # print(comment_pk)
         # ins.like_comment(comment_pk)
         
         
     def start(self):
-        print("OK")
+        print(self.comment_pk)
        
 
 app = QApplication(sys.argv)

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>583</width>
-    <height>495</height>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>320</x>
       <y>10</y>
       <width>251</width>
-      <height>331</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="title">
@@ -35,7 +35,7 @@
        <x>10</x>
        <y>30</y>
        <width>231</width>
-       <height>291</height>
+       <height>171</height>
       </rect>
      </property>
      <property name="editable">
@@ -55,8 +55,8 @@
    <widget class="QPushButton" name="getComments">
     <property name="geometry">
      <rect>
-      <x>419</x>
-      <y>350</y>
+      <x>420</x>
+      <y>240</y>
       <width>151</width>
       <height>25</height>
      </rect>
@@ -71,7 +71,7 @@
       <x>9</x>
       <y>10</y>
       <width>301</width>
-      <height>331</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="title">
@@ -96,16 +96,16 @@
        <x>10</x>
        <y>80</y>
        <width>288</width>
-       <height>241</height>
+       <height>121</height>
       </rect>
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="start">
+   <widget class="QPushButton" name="startLike">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>350</y>
+      <y>240</y>
       <width>151</width>
       <height>25</height>
      </rect>

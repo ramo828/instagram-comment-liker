@@ -17,7 +17,7 @@ class Instagram:
         return comments.pk
 
     def get_comments(self, media):
-        comments = self.cl.media_comments(media)
+        comments = self.cl.media_comments(media,amount=100)
         return comments
     
     def like_comment(self, comment_pk):
