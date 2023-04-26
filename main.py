@@ -12,8 +12,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.startLike.clicked.connect(self.start)
         self.instagram = Instagram()
         self.kullanicilar = {
-            "elda.r2372": "ramiz123",
-            "illegalism666": "Ramizz...1994hack"
+           
         }
 
 
@@ -50,6 +49,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         comments = self.instagram.get_comments(media)
         for comment in range(len(comments)):
             self.commentsList.addItem(comments[comment].text)
+            self.comment_text = comments[comment].text
         
         # print(comments[0].text)
         self.comment_pk = self.instagram.get_comment_pk(comments[self.commentsList.currentIndex()])
@@ -59,6 +59,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         
     def start(self):
         print(self.comment_pk)
+        print(self.comment_text)
        
 
 app = QApplication(sys.argv)
