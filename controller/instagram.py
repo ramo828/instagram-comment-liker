@@ -5,6 +5,9 @@ class Instagram:
     def __init__(self):
         self.cl = Client()
 
+    def init_instagram(self):
+        self.cl = Client()
+
     def set_account(self, user, password):
         self.cl.login(user, password)
 
@@ -16,15 +19,17 @@ class Instagram:
     def get_comment_pk(self, comments):
         return comments.pk
 
-    def get_comments(self, media):
-        comments = self.cl.media_comments(media,amount=100)
+    def get_comments(self, media, limit = 100):
+        comments = self.cl.media_comments(media,amount=limit)
+        
         return comments
     
     def like_comment(self, comment_pk):
         if(self.cl.comment_like(int(comment_pk))):
-            print("OK")
+            return True
         else:
-            print("Nop")
+            return False
+    
 
 
 

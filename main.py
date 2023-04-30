@@ -1,20 +1,91 @@
-from controller.instagram import Instagram
 from pyui.main import Ui_CommentLikerPanel
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor
+from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor, QPixmap
+from PyQt6 import QtCore, QtGui, QtWidgets
+import urllib.request
+from pyui.extension import Extension
 import sys
+import threading as td
+
 
 class Pencere(QMainWindow, Ui_CommentLikerPanel):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.getComments.clicked.connect(self.get_comments)
-        self.startLike.clicked.connect(self.start)
-        self.instagram = Instagram()
-        self.kullanicilar = {
-           
-        }
+        self.getComments.clicked.connect(self.download_comments)
+        self.manual.clicked.connect(self.comment_choise)
+        self.set_limit.clicked.connect(self.limit_control)
+        self.manual_text.clicked.connect(self.comment_choise)
+        self.manual.setChecked(True)
+        self.ext = Extension()
+        self.ext.terminal.connect(self.add_colored_text)
+        self.ext.image.connect(self.setPixmap)
+        self.ext.commentList.connect(self.commentAddItem)
+        self.ext.clear.connect(self.commentListClear)
+        self.ext.status.connect(self.statusLabel)
 
+
+        
+    def download_comments(self):
+        link = self.postLink.text()
+        limitCheck = self.set_limit.isChecked()
+        limit = int(self.limit.text())
+        user = self.user.text()
+        acceptCheck = self.set_accept.isChecked()
+        manualCheck = self.manual.isChecked()
+        userName = ''
+        userPass = ''
+
+        args=(
+            link,
+            limit,
+            user,
+            limitCheck,
+            acceptCheck,
+            manualCheck,
+            userName,
+            userPass)
+        self.thread1 = td.Thread(target=self.ext.get_comments, daemon=True, args=args)
+        self.thread1.start()
+       
+    def setPixmap(self, url):
+        self.profile_image.setPixmap(self.set_profile_pic(url))
+
+    def statusLabel(self, status:bool):
+        if(status):
+            self.status_label.setStyleSheet("""
+            background-color: green;
+            border-radius: 15px;
+            """)
+        else:
+            self.status_label.setStyleSheet("""
+            background-color: red;
+            border-radius: 15px;
+            """)
+
+
+    def set_profile_pic(self, url):
+        # Resmi indirin ve QPixmap nesnesine yükleyin
+        data = urllib.request.urlopen(url).read()
+        pixmap = QPixmap()
+        pixmap.loadFromData(data)
+        # Resmi ölçeklendirin
+        scaled_pixmap = pixmap.scaled(31, 17)
+        return scaled_pixmap
+
+    def limit_control(self):
+        if(self.set_limit.isChecked()):
+            self.limit.setEnabled(True)
+        else:
+            self.limit.setEnabled(False)
+
+    def comment_choise(self):
+        if(self.manual.isChecked()):
+            self.commentsList.setEnabled(True)
+            self.user.setEnabled(False)
+        else:
+            self.commentsList.setEnabled(True)
+            self.user.setEnabled(True)
 
     def add_colored_text(self, text, color):
         # Yazı rengini ayarlamak için QTextCharFormat sınıfını kullanıyoruz
@@ -31,35 +102,17 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         cursor.setPosition(cursor.position() - len(text))
         cursor.movePosition(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.KeepAnchor, len(text))
         cursor.setCharFormat(char_format)
+   
 
-    def get_comments(self):
-        if(not self.postLink.text()):
-            self.add_colored_text("Post linki bos buraxildi\n",'red')
-        elif(not self.postLink.text().startswith('https://')):
-            self.add_colored_text("Post linki dogru yazilmadi\n",'red')
-        else:
-            self.commentsList.setEnabled(True)
-            self.add_colored_text("Ger sey qaydasindadir\n",'blue')
-            self.get_comment_list()
-
-    def get_comment_list(self):
+    def commentAddItem(self, item):
+        self.commentsList.addItem(item)
+    def commentListClear(self):
         self.commentsList.clear()
-        self.instagram.set_account('illegalism666', self.kullanicilar['illegalism666'])
-        media = self.instagram.get_media(self.postLink.text())
-        comments = self.instagram.get_comments(media)
-        for comment in range(len(comments)):
-            self.commentsList.addItem(comments[comment].text)
-            self.comment_text = comments[comment].text
-        
-        # print(comments[0].text)
-        self.comment_pk = self.instagram.get_comment_pk(comments[self.commentsList.currentIndex()])
-        # print(comment_pk)
-        # ins.like_comment(comment_pk)
-        
-        
-    def start(self):
-        print(self.comment_pk)
-        print(self.comment_text)
+
+   
+    
+
+
        
 
 app = QApplication(sys.argv)
