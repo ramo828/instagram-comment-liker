@@ -12,6 +12,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.data = object
         self.getComments.clicked.connect(self.download_comments)
         self.manual.clicked.connect(self.comment_choise)
         self.set_limit.clicked.connect(self.limit_control)
@@ -24,14 +25,33 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.ext.clear.connect(self.commentListClear)
         self.ext.status.connect(self.statusLabel)
         self.ext.data.connect(self.sepCommand)
+        self.ext.pk.connect(self.setCommandPk)
         self.postLink.returnPressed.connect(self.link_controller)
-        
+        self.startLike.clicked.connect(self.runLiker)
+        self.commentsList.currentIndexChanged.connect(self.commentListController)
+
+    def commentListController(self):
+        index = self.commentsList.currentIndex()
+        print(self.ext.get_pk_from_index(index))
+        self.setCommandPk(self.ext.get_pk_from_index(index))
+
+    def setCommandPk(self, pk):
+        self.pk = pk        
+
+    def runLiker(self):
+        print(self.pk)
+        args=(self.pk,
+        int(self.like_count.text()))
+        self.thread2 = td.Thread(target=self.ext.run_command_liker, daemon=True, args=args)
+        self.thread2.start()
+
     def link_controller(self):
         link = self.postLink.text()
         if(link.find("/c/") != -1):
             print("pk link")
             self.statusLabel(True)
-            self.add_colored_text(f"Yorum seçildi: {self.ext.get_comment_pk_from_url(link)}\n","lightgreen")
+            self.add_colored_text(f"\nYorum seçildi: {self.ext.get_comment_pk_from_url(link)}\n","lightgreen")
+            self.setCommandPk(self.ext.get_comment_pk_from_url(link))
             self.objectsStatus(True)
         else:
             self.statusLabel(False)
@@ -61,6 +81,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         user = self.user.text()
         acceptCheck = self.set_accept.isChecked()
         manualCheck = self.manual.isChecked()
+        # kullanici ve sifre
         userName = ''
         userPass = ''
 
@@ -77,7 +98,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.thread1.start()
        
     def sepCommand(self, data):
-        print(data)
+        self.data = data
     
     def setPixmap(self, url):
         self.profile_image.setPixmap(self.set_profile_pic(url))
@@ -88,11 +109,17 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
             background-color: lightgreen;
             border-radius: 15px;
             """)
+            self.startLike.setEnabled(True)
+            self.like_count.setEnabled(True)
         else:
             self.status_label.setStyleSheet("""
             background-color: magenta;
             border-radius: 15px;
             """)
+            self.startLike.setDisabled(True)
+            self.like_count.setDisabled(True)
+
+
 
 
     def set_profile_pic(self, url):
@@ -139,12 +166,7 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.commentsList.addItem(item)
     def commentListClear(self):
         self.commentsList.clear()
-
-   
     
-
-
-       
 
 app = QApplication(sys.argv)
 pencere = Pencere()

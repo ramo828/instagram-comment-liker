@@ -10,6 +10,7 @@ class Extension(QObject):
     clear = Signal()
     status = Signal(bool)
     data = Signal(object)
+    pk = Signal(str)
     instagram = Instagram()
 
     def get_comments(self,
@@ -38,8 +39,10 @@ class Extension(QObject):
                 # Medialari al
                 if(set_limit):
                     comments = self.instagram.get_comments(media, limit)
+                    self.data_comments = comments
                 else:
                     comments = self.instagram.get_comments(media, 1000000)
+                    self.data_comments = comments
                 length_comments = len(comments)
                 # Comment uzunlugu
                 self.terminal.emit(f'{length_comments} tane yorum bulundu\n',"blue")
@@ -50,44 +53,71 @@ class Extension(QObject):
                                 self.image.emit(comments[comment].user.profile_pic_url)
                                 self.commentList.emit(comments[comment].text)
                                 self.data.emit(comments[comment])
+                                self.pk.emit(comments[comment].pk)
+
                         else:
                                 self.image.emit(comments[comment].user.profile_pic_url)
                                 self.commentList.emit(comments[comment].text)
                                 self.data.emit(comments[comment])
+                                self.pk.emit(comments[comment].pk)
 
                     elif(manual):
                         if(set_accept):
                             if(not '@' in comments[comment].text):
                                 self.commentList.emit(comments[comment].text)
-                                self.data.emit(comments[comment])
 
 
                         else:
                             self.commentList.emit(comments[comment].text)
-                            self.data.emit(comments[comment])
 
                 self.status.emit(True)
 
-
-
-
-                        
-                # self.comment_pk = self.instagram.get_comment_pk(comments[commentIndex])
-                # print(comment_pk)
-                # ins.like_comment(comment_pk)
         except (ChallengeUnknownStep,ChallengeRequired) as e:
             print(e)
-            self.terminal.emit("Hesap dogrulamaya dustu\n",'red')
+            self.terminal.emit("\nHesap dogrulamaya dustu",'red')
         except LoginRequired as e:
             print(e)
-            self.instagram.set_account(userName, userPass)
-            self.terminal.emit("Hesapdan cikis yapilmis\n",'red')
+            self.terminal.emit("\nHesapdan cikis yapilmis",'red')
+        except UnknownError as e:
+            print(e)
+            self.terminal.emit("\nHesap bilgileri doğru yazılmamış",'red')
+
+
+    def get_pk_from_index(self, index = 0):
+        return self.data_comments[index].pk
+
 
     def get_comment_pk_from_url(self, link:str):
         link = link.replace("https://www.instagram.com/p/","")
         begin = link.find("/c/")
         end = link.rindex("/")
         return link[begin+3:end]
+    
+    def run_command_liker(self, pk, limit):
+        file = open("accounts.txt","r")
+        userlist = file.read().splitlines()
+        counter = 0
+        for user in userlist:
+            try:
+                if(counter == limit):
+                    self.terminal.emit(f"\nBeğenme sona erdi", "green")
+                    break
+                like_ins = Instagram()
+                user = user.split(":")
+                userName = user[0]
+                userPass = user[1]
+                print(userName, userPass)
+                like_ins.set_account(userName,userPass)
+                status = like_ins.like_comment(int(pk))
+                if(status):
+                    self.terminal.emit(f"\n{userName} Begendi",'green')
+                else:
+                    print("Begenmedi\n")
+                    self.terminal.emit(f"\n{userName} Begenmedi",'red')
+                counter+=1
+            except Exception as e:
+                self.terminal.emit(f"\nXeta bas verdi: {e}", "red")
+
 
 
 
