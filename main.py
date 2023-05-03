@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor, QPixmap
 from PyQt6 import QtCore, QtGui, QtWidgets
 import urllib.request
-from pyui.extension import Extension
+from controller.extension import Extension
 import sys
 import threading as td
 
@@ -23,9 +23,37 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.ext.commentList.connect(self.commentAddItem)
         self.ext.clear.connect(self.commentListClear)
         self.ext.status.connect(self.statusLabel)
-
-
+        self.ext.data.connect(self.sepCommand)
+        self.postLink.returnPressed.connect(self.link_controller)
         
+    def link_controller(self):
+        link = self.postLink.text()
+        if(link.find("/c/") != -1):
+            print("pk link")
+            self.statusLabel(True)
+            self.add_colored_text(f"Yorum seçildi: {self.ext.get_comment_pk_from_url(link)}\n","lightgreen")
+            self.objectsStatus(True)
+        else:
+            self.statusLabel(False)
+            self.objectsStatus(False)
+
+    def objectsStatus(self, status:bool):
+        if(status):
+            self.commentsList.setDisabled(True)
+            self.getComments.setDisabled(True)
+            self.manual.setDisabled(True)
+            self.set_limit.setDisabled(True)
+            self.manual_text.setDisabled(True)
+            self.set_accept.setDisabled(True)
+        else:
+            self.commentsList.setEnabled(True)
+            self.getComments.setEnabled(True)
+            self.manual.setEnabled(True)
+            self.set_limit.setEnabled(True)
+            self.manual_text.setEnabled(True)
+            self.set_accept.setEnabled(True)
+
+
     def download_comments(self):
         link = self.postLink.text()
         limitCheck = self.set_limit.isChecked()
@@ -48,18 +76,21 @@ class Pencere(QMainWindow, Ui_CommentLikerPanel):
         self.thread1 = td.Thread(target=self.ext.get_comments, daemon=True, args=args)
         self.thread1.start()
        
+    def sepCommand(self, data):
+        print(data)
+    
     def setPixmap(self, url):
         self.profile_image.setPixmap(self.set_profile_pic(url))
 
     def statusLabel(self, status:bool):
         if(status):
             self.status_label.setStyleSheet("""
-            background-color: green;
+            background-color: lightgreen;
             border-radius: 15px;
             """)
         else:
             self.status_label.setStyleSheet("""
-            background-color: red;
+            background-color: magenta;
             border-radius: 15px;
             """)
 

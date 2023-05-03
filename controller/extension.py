@@ -9,6 +9,7 @@ class Extension(QObject):
     commentList = Signal(str)
     clear = Signal()
     status = Signal(bool)
+    data = Signal(object)
     instagram = Instagram()
 
     def get_comments(self,
@@ -48,16 +49,23 @@ class Extension(QObject):
                             if(not '@' in comments[comment].text):
                                 self.image.emit(comments[comment].user.profile_pic_url)
                                 self.commentList.emit(comments[comment].text)
+                                self.data.emit(comments[comment])
                         else:
                                 self.image.emit(comments[comment].user.profile_pic_url)
                                 self.commentList.emit(comments[comment].text)
+                                self.data.emit(comments[comment])
+
                     elif(manual):
                         if(set_accept):
                             if(not '@' in comments[comment].text):
                                 self.commentList.emit(comments[comment].text)
+                                self.data.emit(comments[comment])
+
 
                         else:
                             self.commentList.emit(comments[comment].text)
+                            self.data.emit(comments[comment])
+
                 self.status.emit(True)
 
 
@@ -69,12 +77,17 @@ class Extension(QObject):
                 # ins.like_comment(comment_pk)
         except (ChallengeUnknownStep,ChallengeRequired) as e:
             print(e)
-            # self.terminal.emit("Hesap dogrulamaya dustu\n",'red')
+            self.terminal.emit("Hesap dogrulamaya dustu\n",'red')
         except LoginRequired as e:
             print(e)
+            self.instagram.set_account(userName, userPass)
             self.terminal.emit("Hesapdan cikis yapilmis\n",'red')
 
-
+    def get_comment_pk_from_url(self, link:str):
+        link = link.replace("https://www.instagram.com/p/","")
+        begin = link.find("/c/")
+        end = link.rindex("/")
+        return link[begin+3:end]
 
 
 

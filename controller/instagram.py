@@ -23,6 +23,10 @@ class Instagram:
         comments = self.cl.media_comments(media,amount=limit)
         
         return comments
+    def get_comments_ch(self, media, limit = 100):
+        comments = self.cl.media_comments_chunk(media, limit)
+        
+        return comments
     
     def like_comment(self, comment_pk):
         if(self.cl.comment_like(int(comment_pk))):

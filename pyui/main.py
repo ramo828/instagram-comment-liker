@@ -56,7 +56,7 @@ class Ui_CommentLikerPanel(object):
         self.set_accept.setGeometry(QtCore.QRect(10, 210, 161, 23))
         self.set_accept.setObjectName("set_accept")
         self.status_label = QtWidgets.QLabel(parent=self.commentBox)
-        self.status_label.setGeometry(QtCore.QRect(340, 85, 41, 31))
+        self.status_label.setGeometry(QtCore.QRect(340, 85, 31, 31))
         self.status_label.setStyleSheet("background-color: rgb(190, 190, 190);\n"
 "border-radius: 15px;")
         self.status_label.setText("")
