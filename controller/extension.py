@@ -11,6 +11,8 @@ class Extension(QObject):
     status = Signal(bool)
     data = Signal(object)
     pk = Signal(str)
+    counter_signal = Signal(int, int)
+    statusLike = Signal(bool)
     instagram = Instagram()
 
     def get_comments(self,
@@ -93,17 +95,25 @@ class Extension(QObject):
         end = link.rindex("/")
         return link[begin+3:end]
     
-    def run_command_liker(self, pk, limit):
-        file = open("accounts.txt","r")
+    def run_command_liker(self, pk, limit, filename = "accounts.txt", sep=':'):
+        file = open(filename,"r")
         userlist = file.read().splitlines()
         counter = 0
+        err_count = 0
+        success_count = 0
+        self.statusLike.emit(False)
         for user in userlist:
+            self.counter_signal.emit(success_count,1)
+            self.counter_signal.emit(err_count,0)
+
             try:
                 if(counter == limit):
                     self.terminal.emit(f"\nBeğenme sona erdi", "green")
                     break
+                elif(len(userlist) == counter):
+                    break
                 like_ins = Instagram()
-                user = user.split(":")
+                user = user.split(sep)
                 userName = user[0]
                 userPass = user[1]
                 print(userName, userPass)
@@ -114,9 +124,22 @@ class Extension(QObject):
                 else:
                     print("Begenmedi\n")
                     self.terminal.emit(f"\n{userName} Begenmedi",'red')
+                success_count +=1
                 counter+=1
+            except (ChallengeUnknownStep, ChallengeRequired) as e:
+                print(e)
+                err_count+=1
+                self.terminal.emit(f"Hesap doğrulama hatası: {user}")
+            except UnknownError as e:
+                err_count+=1
+                self.terminal.emit(f"\nHata oluşdu: {e}", "red")
             except Exception as e:
-                self.terminal.emit(f"\nXeta bas verdi: {e}", "red")
+                err_count+=1
+                self.terminal.emit(f"\nHata oluşdu: {e}", "red")
+            self.statusLike.emit(True)
+
+
+
 
 
 
