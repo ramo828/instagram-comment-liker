@@ -1,6 +1,8 @@
 from pyui.main import Ui_CommentLikerPanel
 from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QDialog, QWidget, QLabel, QVBoxLayout,QFileDialog
+from PyQt6 import QtCore, QtGui, QtWidgets
+from random import randint
 import urllib.request
 from controller.extension import Extension
 from controller.database import Database
@@ -80,6 +82,31 @@ class loginUI(QMainWindow, loginInterface):
             self.settingUI.pass_try.setStyleSheet('color: red;')
             self.settingUI.pass2.setStyleSheet('color: red;')
 
+
+    def about(self):
+        h = 300
+        w = 120
+        theme = self.loadTheme()
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Hakkında")
+        dialog.setModal(True)
+        dialog.resize(h, w)
+        dialog.setStyleSheet(theme)
+        # Label oluşturun
+        label = QLabel("""
+        Bu program özel olarak RamoSoft'a yapılmışdır ve tüm hakları saklıdır.
+            iletisim Bilgileri
+        email: illegalism666@gmail.com
+        whatsapp: +994558302766
+        """, dialog)
+        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        label.setStyleSheet("color: red;")
+        label.move(int(h/2), int(w/2))
+        # Düzen oluşturun ve label'i ekleyin
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(label)
+        dialog.setLayout(layout)
+        dialog.exec()
 
     def save_and_quit(self):
         password = ""
@@ -186,6 +213,9 @@ class loginUI(QMainWindow, loginInterface):
         self.homeUI.commentsList.currentIndexChanged.connect(self.commentListController)
         self.homeUI.action_k.triggered.connect(self.quit)
         self.homeUI.actionAyarlar.triggered.connect(self.settUI)
+        self.homeUI.actionHakk_nda.triggered.connect(self.about)
+
+
 
     def setCounter(self, ch, count):
         if(ch == 0):
@@ -255,8 +285,15 @@ class loginUI(QMainWindow, loginInterface):
         acceptCheck = self.homeUI.set_accept.isChecked()
         manualCheck = self.homeUI.manual.isChecked()
         # kullanici ve sifre
-        userName = ''
-        userPass = ''
+        duser = ''
+        dpass = ''
+        fileName = self.db.load_data(2)
+        if(fileName):
+            data = open(fileName,"r").read().splitlines()
+            length = len(data)
+            randomUser = randint(0, length)
+            duser = str(data[randomUser].split(":")[0])
+            dpass = str(data[randomUser].split(":")[1])
 
         args=(
             link,
@@ -265,8 +302,8 @@ class loginUI(QMainWindow, loginInterface):
             limitCheck,
             acceptCheck,
             manualCheck,
-            userName,
-            userPass)
+            duser,
+            dpass)
         self.thread1 = td.Thread(target=self.ext.get_comments, daemon=True, args=args)
         self.thread1.start()
        
