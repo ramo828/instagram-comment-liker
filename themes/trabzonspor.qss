@@ -39,3 +39,10 @@ QSpinBox {
 QLineEdit {
    background-color: rgb(102, 178, 255);
 }
+QRadioButton {
+    color: rgb(102, 178, 255);
+}
+
+QCheckBox {
+    color: rgb(102, 178, 255);
+}

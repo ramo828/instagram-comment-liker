@@ -4,11 +4,9 @@ QMainWindow {
     border-radius: 3px;	
 }
 QLabel {
-        color: rgb(255, 255, 0);
+    color: rgb(255, 255, 0);
 }
-QCheckBox {
-        color: rgb(255, 102, 102);
-}
+
 QListView {
     background-color: rgb(255, 255, 0);
     border-radius: 10px;	
@@ -37,4 +35,12 @@ QSpinBox {
 
 QLineEdit {
    background-color: rgb(255, 255, 0)
+}
+
+QRadioButton {
+    color: rgb(255, 255, 0);
+}
+
+QCheckBox {
+    color: rgb(255, 255, 0);
 }

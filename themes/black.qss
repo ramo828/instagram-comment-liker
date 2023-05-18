@@ -8,15 +8,15 @@ QListView {
 }
 QComboBox {
     background-color: rgb(128, 128, 128);
-        border-radius: 5px;	
+    border-radius: 5px;	
 }
 QGroupBox {
     background-color: rgb(128, 128, 128);
-        border-radius: 3px;	
+    border-radius: 3px;	
 }
 QPushButton {
     background-color: rgb(224, 224, 224);
-        border-radius: 5px;	
+    border-radius: 5px;	
             }
 QPlainTextEdit {
     background-color: rgb(192, 192, 192);
@@ -28,4 +28,12 @@ QSpinBox {
 
 QLineEdit {
    background-color: rgb(192, 192, 192)
+}
+
+QRadioButton {
+    color: rgb(192, 192, 192);
+}
+
+QCheckBox {
+    color: rgb(192, 192, 192);
 }

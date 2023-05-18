@@ -332,12 +332,12 @@ class loginUI(QMainWindow, loginInterface):
     def statusLabel2(self, status:bool):
         if(status):
                 self.homeUI.status_label2.setStyleSheet("""
-                background-color: green;
+                background-color: red;
                 border-radius: 5px;
                 """)
         else:
                 self.homeUI.status_label2.setStyleSheet("""
-                background-color: red;
+                background-color: green;
                 border-radius: 5px;
                 """)
                 

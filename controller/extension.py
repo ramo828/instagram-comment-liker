@@ -114,28 +114,30 @@ class Extension(QObject):
                     break
                 like_ins = Instagram()
                 user = user.split(sep)
-                userName = user[0]
-                userPass = user[1]
-                print(userName, userPass)
-                like_ins.set_account(userName,userPass)
+                self.userName = user[0]
+                self.userPass = user[1]
+                like_ins.set_account(self.userName,self.userPass)
                 status = like_ins.like_comment(int(pk))
                 if(status):
-                    self.terminal.emit(f"\n{userName} Begendi",'green')
+                    self.terminal.emit(f"\n{self.userName} Begendi",'green')
                 else:
                     print("Begenmedi\n")
-                    self.terminal.emit(f"\n{userName} Begenmedi",'red')
+                    self.terminal.emit(f"\n{self.userName} Begenmedi",'red')
                 success_count +=1
                 counter+=1
             except (ChallengeUnknownStep, ChallengeRequired) as e:
                 print(e)
                 err_count+=1
-                self.terminal.emit(f"Hesap doğrulama hatası: {user}")
+                self.terminal.emit(f"Hesap doğrulama hatası: {user} \n Kullanıcı: {self.userName}")
+                continue
             except UnknownError as e:
                 err_count+=1
-                self.terminal.emit(f"\nHata oluşdu: {e}", "red")
+                self.terminal.emit(f"\nHata oluşdu: {e}\n Kullanıcı: {self.userName}", "red")
+                continue
             except Exception as e:
                 err_count+=1
-                self.terminal.emit(f"\nHata oluşdu: {e}", "red")
+                self.terminal.emit(f"\nHata oluşdu: {e}\n Kullanıcı: {self.userName}", "red")
+                continue
             self.statusLike.emit(True)
 
 
