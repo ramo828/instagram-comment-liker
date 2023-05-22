@@ -138,7 +138,7 @@ class Extension(QObject):
                 err_count+=1
                 self.terminal.emit(f"\nHata oluşdu: {e}\n Kullanıcı: {self.userName}", "red")
                 continue
-            self.statusLike.emit(True)
+        self.statusLike.emit(True)
 
 
 

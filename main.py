@@ -344,7 +344,6 @@ class loginUI(QMainWindow, loginInterface):
 
 
 
-
     def set_profile_pic(self, url):
         # Resmi indirin ve QPixmap nesnesine yükleyin
         data = urllib.request.urlopen(url).read()
