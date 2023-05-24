@@ -214,14 +214,22 @@ class loginUI(QMainWindow, loginInterface):
         self.homeUI.action_k.triggered.connect(self.quit)
         self.homeUI.actionAyarlar.triggered.connect(self.settUI)
         self.homeUI.actionHakk_nda.triggered.connect(self.about)
+        self.homeUI.startLike.setText("Başla")
+        self.c1 = 0
+        self.c2 = 0
+        self.status_data = False
 
 
 
-    def setCounter(self, ch, count):
+    def setCounter(self, ch):
         if(ch == 0):
-            self.homeUI.label_6.setText(str(count))
+            self.c1+=1
+            self.homeUI.label_6.setText(str(self.c1))
+            print(self.c1)
         elif(ch == 1):
-            self.homeUI.label_5.setText(str(count))
+            self.c2+=1
+            self.homeUI.label_5.setText(str(self.c2))
+            print(self.c2)
 
 
     def commentListController(self):
@@ -238,7 +246,6 @@ class loginUI(QMainWindow, loginInterface):
     def runLiker(self):
         fileName = self.db.load_data(2)
         sep = self.db.load_data(3)
-        print(fileName, sep)
         args=(
         self.pk,
         int(self.homeUI.like_count.text()),
@@ -246,7 +253,17 @@ class loginUI(QMainWindow, loginInterface):
         sep
         )
         self.thread2 = td.Thread(target=self.ext.run_command_liker, daemon=True, args=args)
-        self.thread2.start()
+        if(self.status_data):
+            self.add_colored_text("İşlem durduruluyor. Lütfen biraz bekleyin", "yellow")
+            self.homeUI.startLike.setText("Başla")
+            self.ext.stopLiker(True)
+            self.status_data = False
+           
+        else:
+            self.homeUI.startLike.setText("Durdur")
+            self.thread2.start()
+            self.status_data = True
+
 
     def link_controller(self):
         link = self.homeUI.postLink.text()

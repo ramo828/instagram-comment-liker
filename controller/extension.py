@@ -11,9 +11,14 @@ class Extension(QObject):
     status = Signal(bool)
     data = Signal(object)
     pk = Signal(str)
-    counter_signal = Signal(int, int)
+    counter_signal = Signal(int)
     statusLike = Signal(bool)
     instagram = Instagram()
+    liker_status = False
+
+    def stopLiker(self, status:bool):
+        self.liker_status = status
+        print(status)
 
     def get_comments(self,
                      link:str, 
@@ -95,49 +100,61 @@ class Extension(QObject):
         end = link.rindex("/")
         return link[begin+3:end]
     
-    def run_command_liker(self, pk, limit, filename = "accounts.txt", sep=':'):
-        file = open(filename,"r")
-        userlist = file.read().splitlines()
-        counter = 0
-        err_count = 0
-        success_count = 0
-        self.statusLike.emit(False)
-        for user in userlist:
-            self.counter_signal.emit(success_count,1)
-            self.counter_signal.emit(err_count,0)
+    def run_command_liker(self, pk, limit, filename="accounts.txt", sep=':'):
+        try:
+            self.file = open(filename, "r")
+            self.userlist = self.file.read().splitlines()
+        except FileNotFoundError:
+            self.terminal.emit(f"\nHata oluşdu: Kullanıcı adı ve şifrelerin kayıtlıolduğu dosya seçilmedi", "red")
 
+        counter = 0
+        self.statusLike.emit(False)
+        for user in self.userlist:
+            if(self.liker_status):
+                print("stop ok")
+                self.terminal.emit(f"\nBeğenme durduruldu", "green")
+                break
             try:
-                if(counter == limit):
+                if counter == limit:
                     self.terminal.emit(f"\nBeğenme sona erdi", "green")
                     break
-                elif(len(userlist) == counter):
+                elif len(self.userlist) == counter:
                     break
                 like_ins = Instagram()
                 user = user.split(sep)
                 self.userName = user[0]
                 self.userPass = user[1]
-                like_ins.set_account(self.userName,self.userPass)
+                like_ins.set_account(self.userName, self.userPass)
                 status = like_ins.like_comment(int(pk))
-                if(status):
-                    self.terminal.emit(f"\n{self.userName} Begendi",'green')
+                if(self.liker_status):
+                    self.terminal.emit(f"\nBeğenme durduruldu", "green")
+                    break
+                if status:
+                    self.terminal.emit(f"\n{self.userName} Begendi", 'green')
                 else:
-                    print("Begenmedi\n")
-                    self.terminal.emit(f"\n{self.userName} Begenmedi",'red')
-                success_count +=1
-                counter+=1
+                    self.terminal.emit(f"\n{self.userName} Begenmedi", 'red')
+                counter += 1
+                if(self.liker_status):
+                    self.terminal.emit(f"\nBeğenme durduruldu", "green")
+                    break
             except (ChallengeUnknownStep, ChallengeRequired) as e:
                 print(e)
-                err_count+=1
                 self.terminal.emit(f"Hesap doğrulama hatası: {user} \n Kullanıcı: {self.userName}")
+                self.counter_signal.emit(0)  # err_count sayacını diğer kodlara ilet
                 continue
             except UnknownError as e:
-                err_count+=1
                 self.terminal.emit(f"\nHata oluşdu: {e}\n Kullanıcı: {self.userName}", "red")
+                self.counter_signal.emit(0)  # err_count sayacını diğer kodlara ilet
                 continue
             except Exception as e:
-                err_count+=1
                 self.terminal.emit(f"\nHata oluşdu: {e}\n Kullanıcı: {self.userName}", "red")
+                self.counter_signal.emit(0)  # err_count sayacını diğer kodlara ilet
                 continue
+            else:
+                self.counter_signal.emit(1)  # success_count sayacını diğer kodlara ilet
+            if(self.liker_status):
+                self.terminal.emit(f"\nBeğenme durduruldu", "green")
+                break
         self.statusLike.emit(True)
 
 
