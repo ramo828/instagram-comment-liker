@@ -15,14 +15,14 @@ QListView {
     border-radius: 10px;	
 }
 QComboBox {
-    background-color: rgb(51, 0, 25);
-    color: rgb(102, 178, 255);
-        border-radius: 5px;	
+    background-color: rgb(102, 178, 255);
+    color: rgb(0, 0, 0);
+    border-radius: 5px;	
 }
 QGroupBox {
     background-color: rgb(51, 0, 25);
     color: rgb(102, 178, 255);
-        border-radius: 3px;	
+    border-radius: 3px;	
 }
 QPushButton {
     background-color: rgb(102, 178, 255);

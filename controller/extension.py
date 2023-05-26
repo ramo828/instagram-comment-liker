@@ -88,6 +88,9 @@ class Extension(QObject):
         except UnknownError as e:
             print(e)
             self.terminal.emit("\nHesap bilgileri doğru yazılmamış",'red')
+        except Exception as e:
+            print(e)
+            self.terminal.emit(f"\n{e}",'red')
 
 
     def get_pk_from_index(self, index = 0):
@@ -135,11 +138,11 @@ class Extension(QObject):
                     self.terminal.emit(f"\n{self.userName} Begenmedi", 'red')
                 counter += 1
                 if(self.liker_status):
-                    self.terminal.emit(f"\nBeğenme durduruldu", "green")
+                    self.terminal.emit("\nBeğenme durduruldu", "green")
                     break
             except (ChallengeUnknownStep, ChallengeRequired) as e:
                 print(e)
-                self.terminal.emit(f"Hesap doğrulama hatası: {user} \n Kullanıcı: {self.userName}")
+                self.terminal.emit(f"Hesap doğrulama hatası: {user} \n Kullanıcı: {self.userName}","red")
                 self.counter_signal.emit(0)  # err_count sayacını diğer kodlara ilet
                 continue
             except UnknownError as e:
